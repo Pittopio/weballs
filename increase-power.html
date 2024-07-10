@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Increase Power</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #333;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .header {
+            margin-top: 20px;
+            font-size: 24px;
+        }
+        .coin {
+            margin: 20px 0;
+            width: 100px;
+            height: 100px;
+            background-color: gold;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 36px;
+            color: black;
+        }
+        .button {
+            font-size: 16px;
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .back-button {
+            position: fixed;
+            bottom: 20px;
+            font-size: 16px;
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">Increase Your Energy</div>
+    <div class="coin" id="current-power-level">1</div>
+    <button class="button" onclick="increasePowerLevel()">Increase (5000 Points)</button>
+    <button class="back-button" onclick="goBack()">Back</button>
+    
+    <script>
+        let powerLevel = parseInt(localStorage.getItem('powerLevel')) || 1;
+        let energy = parseInt(localStorage.getItem('energy')) || 5000;
+        let updateCost = 5000 * Math.pow(2, powerLevel - 1);
+        
+        document.getElementById('current-power-level').innerText = powerLevel;
+        document.querySelector('.button').innerText = `Increase (${updateCost} Points)`;
+        
+        function increasePowerLevel() {
+            if (energy >= updateCost) {
+                powerLevel++;
+                energy -= updateCost;
+                updateCost = 5000 * Math.pow(2, powerLevel - 1);
+                localStorage.setItem('powerLevel', powerLevel);
+                localStorage.setItem('energy', energy);
+                alert(`Power level increased to ${powerLevel}! Now producing ${powerLevel} coins per tap.`);
+                document.getElementById('current-power-level').innerText = powerLevel;
+                document.querySelector('.button').innerText = `Increase (${updateCost} Points)`;
+            } else {
+                alert("Not enough energy!");
+            }
+        }
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

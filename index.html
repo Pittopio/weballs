@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Mini App</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #333;
+            color: white;
+            font-family: Arial, sans-serif;
+            position: relative;
+        }
+        .coin {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        .coin img {
+            width: 100px;
+            height: 100px;
+        }
+        .coin-count, .energy-level, .profit-per-hour {
+            margin-top: 20px;
+            font-size: 24px;
+        }
+        .profit-per-hour {
+            background-color: orange;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            cursor: default;
+            white-space: nowrap;
+        }
+        .buttons {
+            position: fixed;
+            bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+        }
+        .buttons button {
+            font-size: 16px;
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="coin" onclick="increaseCount()">
+        <img src="coin.png" alt="Coin">
+        <div class="coin-count" id="coin-count">Coins: 0</div>
+        <div class="energy-level" id="energy-level">Energy: 5000</div>
+        <div class="profit-per-hour" id="profit-per-hour">Profit/hr: 200</div>
+    </div>
+    
+    <div class="buttons">
+        <button onclick="navigateToIncreasePower()">Increase Power⚡</button>
+        <button onclick="buyCards()">Buy Cards</button>
+        <button onclick="inviteFriends()">Invite Friends</button>
+    </div>
+    
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tma.js@latest"></script>
+    <script>
+        Telegram.WebApp.ready();
+        
+        let count = parseInt(localStorage.getItem('coinCount')) || 0;
+        let energy = parseInt(localStorage.getItem('energy')) || 5000;
+        let powerLevel = parseInt(localStorage.getItem('powerLevel')) || 1;
+        let profitPerHour = 200; // Default profit per hour
+        let coinsPerSecond = profitPerHour / 3600;
+
+        document.getElementById('coin-count').innerText = 'Coins: ' + count;
+        document.getElementById('energy-level').innerText = 'Energy: ' + energy;
+        document.getElementById('profit-per-hour').innerText = 'Profit/hr: ' + profitPerHour;
+
+        function increaseCount() {
+            if (energy >= 50) {
+                count += powerLevel;
+                energy -= 50;
+                document.getElementById('coin-count').innerText = 'Coins: ' + count;
+                document.getElementById('energy-level').innerText = 'Energy: ' + energy;
+                if (energy === 0) {
+                    startEnergyRecovery();
+                }
+                localStorage.setItem('coinCount', count);
+                localStorage.setItem('energy', energy);
+                navigator.vibrate(200); // Vibrate for 200ms on coin click
+            } else {
+                alert("Not enough energy!");
+            }
+        }
+
+        function startEnergyRecovery() {
+            energyTimer = setInterval(() => {
+                energy += 500;
+                document.getElementById('energy-level').innerText = 'Energy: ' + energy;
+                localStorage.setItem('energy', energy);
+                if (energy >= 5000) {
+                    clearInterval(energyTimer);
+                }
+            }, 60000);
+        }
+
+        function navigateToIncreasePower() {
+            window.location.href = 'increase-power.html';
+        }
+
+        function buyCards() {
+            alert("Buy Cards clicked!");
+        }
+
+        function inviteFriends() {
+            alert("Invite Friends clicked!");
+        }
+
+        function autoIncreaseCoins() {
+            setInterval(() => {
+                count += coinsPerSecond * powerLevel;
+                document.getElementById('coin-count').innerText = 'Coins: ' + Math.floor(count);
+                localStorage.setItem('coinCount', Math.floor(count));
+            }, 1000);
+        }
+
+        autoIncreaseCoins();
+    </script>
+</body>
+</html>
